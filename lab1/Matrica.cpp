@@ -14,6 +14,16 @@ static void alloc_2d_array(double** &data, int r, int c) {
   for (int i = 0; i < r; ++i) {
     data[i] = (double *)malloc(c * sizeof(double));
   }
+  return;
+}
+
+static void realloc_2d_array(double** &data, int r, int c) {
+  data = (double **)realloc(data, r * sizeof(double *));
+
+  for (int i = 0; i < r; ++i) {
+    data[i] = (double *)realloc(data[i], c * sizeof(double));
+  }
+  return;
 }
 
 Matrica::Matrica() : _rows(0), _cols(0), _data(NULL) {
@@ -24,13 +34,17 @@ Matrica::Matrica(int rows, int cols) : _rows(rows), _cols(cols) {
 }
 
 Matrica::Matrica(const Matrica &rhs) {
-  alloc_2d_array(_data, rhs.getRows(), rhs.getCols());
+  _rows = rhs.getRows();
+  _cols = rhs.getCols();
+
+  alloc_2d_array(_data, _rows, _cols);
 
   for (int i = 0; i < _rows; ++i) {
     for (int j = 0; j < _cols; ++j) {
       _data[i][j] = rhs[i][j];
     }
   }
+
 }
 
 Matrica::~Matrica() {
@@ -56,53 +70,207 @@ bool Matrica::operator== (const Matrica &rhs) {
 }
 
 Matrica Matrica::operator= (const Matrica &rhs) {
-  return Matrica(rhs);
+  _rows = rhs.getRows();
+  _cols = rhs.getCols();
+
+  realloc_2d_array(_data, _rows, _cols);
+
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      _data[i][j] = rhs[i][j];
+    }
+  }
+
+  return *this;
 }
 
 Matrica Matrica::operator+ (const Matrica &rhs) {
-  if (_rows != rhs.getRows()) throw -1;
-  if (_cols != rhs.getCols()) throw -1;
+  if (_rows != rhs.getRows()) throw "Zbrajanje matrica, pogresne dimenzije";
+  if (_cols != rhs.getCols()) throw "Zbrajanje matrica, pogresne dimenzije";
 
-  return Matrica();
+  Matrica ret(*this);
+
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      ret[i][j] += rhs[i][j];
+    }
+  }
+
+  return ret;
 }
 
-void  Matrica::operator+= (const Matrica &rhs) {
-  if (_rows != rhs.getRows()) throw -1;
-  if (_cols != rhs.getCols()) throw -1;
+void Matrica::operator+= (const Matrica &rhs) {
+  if (_rows != rhs.getRows()) throw "Zbrajanje matrica, pogresne dimenzija";
+  if (_cols != rhs.getCols()) throw "Zbrajanje matrica, pogresne dimenzija";
+
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      _data[i][j] += rhs[i][j];
+    }
+  }
 
   return;
 }
 
 Matrica Matrica::operator- (const Matrica &rhs) {
-  if (_rows != rhs.getRows()) throw -1;
-  if (_cols != rhs.getCols()) throw -1;
+  if (_rows != rhs.getRows()) throw "Oduzimanje matrica, pogresne dimenzija";
+  if (_cols != rhs.getCols()) throw "Oduzimanje matrica, pogresne dimenzija";
 
-  return Matrica();
+  Matrica ret(*this);
+
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      ret[i][j] -= rhs[i][j];
+    }
+  }
+
+  return ret;
 }
 
 void Matrica::operator-= (const Matrica &rhs) {
-  if (_rows != rhs.getRows()) throw -1;
-  if (_cols != rhs.getCols()) throw -1;
+  if (_rows != rhs.getRows()) throw "Oduzimanje matrica, pogresne dimenzija";
+  if (_cols != rhs.getCols()) throw "Oduzimanje matrica, pogresne dimenzija";
+
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      _data[i][j] -= rhs[i][j];
+    }
+  }
 
   return;
 }
 
-Matrica Matrica::operator* (const int a) {
-  return Matrica();
+Matrica Matrica::operator* (const double a) {
+  Matrica ret(*this);
+
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      ret[i][j] *= a;
+    }
+  }
+
+  return ret;
+}
+
+void Matrica::operator*= (const double a) {
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      _data[i][j] *= a;
+    }
+  }
+
+  return;
 }
 
 Matrica Matrica::operator* (const Matrica &rhs) {
-  if (_cols != rhs.getRows()) throw -1;
+  if (_cols != rhs.getRows()) throw "Mnozenje matrica, pogresne dimenzija";
+  Matrica ret(_rows, rhs.getCols());
 
-  return Matrica(_rows, rhs.getCols());
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < rhs.getCols(); ++j) {
+      ret[i][j] = 0;
+      for (int k = 0; k < _cols; ++k) {
+        ret[i][j] += _data[i][k] * rhs[k][j];
+      }
+    }
+  }
+
+  return ret;
 }
 
 Matrica Matrica::operator~ (void) {
-  return Matrica();
+  Matrica ret(_cols, _rows);
+
+  for (int i = 0; i < _rows; ++i) {
+    for (int j = 0; j < _cols; ++j) {
+      ret[j][i] = _data[i][j];
+    }
+  }
+
+  return ret;
 }
 
 double* Matrica::operator[] (const int row) const {
   return _data[row];
+}
+
+Matrica Matrica::forward_supstitution(const Matrica &b) {
+  if (_rows != b.getRows()) throw "Supstitucija unaprijed, pogresne dimenzije";
+  if (b.getCols() != 1) throw "Supstitucija unaprijed, b nije vektor";
+
+  Matrica y(_rows, 1);
+
+  for (int i = 0; i < _rows; ++i) {
+    double sum = 0;
+    for (int j = 0; j < i; ++j) {
+      sum += _data[i][j] * y[j][0];
+    }
+    y[i][0] = b[i][0] - sum;
+  }
+
+  return y;
+}
+
+Matrica Matrica::backward_supstitution(const Matrica &y) {
+  if (_rows != _cols)       throw "Supstitucija unatrag, pogresne dimenzije";
+  if (_rows != y.getRows()) throw "Supstitucija unatrag, pogresne dimenzije";
+  if (y.getCols() != 1)     throw "Supstitucija unatrag, y nije vektor";
+
+  Matrica x(_rows, 1);
+
+  for (int i = _rows - 1; i >= 0; --i) {
+    double sum = 0;
+    for (int j = i + 1; j < _rows; ++j) {
+      sum += _data[i][j] * x[j][0];
+    }
+    x[i][0] = (y[i][0] - sum) / _data[i][i];
+  }
+
+  return x;
+}
+
+void Matrica::LU_decomposition(void) {
+  if (_rows != _cols) throw "LU dekompozicija, pogresne dimenzije";
+
+  for (int i = 0; i < _rows - 1; ++i) {
+    for (int j = i + 1; j < _rows; ++j) {
+      if (fabs(_data[i][i]) < EPS) throw "LU dekompozicija, pivot jednak nuli";
+      _data[j][i] /= _data[i][i];
+      for (int k = i + 1; k < _rows; ++k) {
+        _data[j][k] -= _data[j][i] * _data[i][k];
+      }
+    }
+  }
+
+  return;
+}
+
+void Matrica::LUP_decomposition(Matrica &b) {
+  if (_rows != _cols)       throw "LUP dekompozicija, pogresne dimenzije";
+  if (_rows != b.getRows()) throw "LUP dekompozicija, pogresne dimenzije";
+  if (b.getCols() != 1)     throw "LUP dekompozicija, pogresne dimenzije";
+
+  for (int i = 0; i < _rows - 1; ++i) {
+    int pivot = i;
+    for (int j = i + 1; j < _rows; ++j) {
+      if (fabs(_data[j][i]) > fabs(_data[pivot][i])) {
+        pivot = j;
+      }
+    }
+
+    swap(_data[i], _data[pivot]);
+    swap(b[i][0], b[pivot][0]);
+
+    for (int j = i + 1; j < _rows; ++j) {
+      if (fabs(_data[i][i]) < EPS) throw "LUP dekompozicija, pivot jednak nuli";
+      _data[j][i] /= _data[i][i];
+      for (int k = i + 1; k < _rows; ++k) {
+        _data[j][k] -= _data[j][i] * _data[i][k];
+      }
+    }
+  }
+
+  return;
 }
 
 int Matrica::getRows(void) const { return _rows; }
@@ -154,11 +322,15 @@ void Matrica::loadFromFile(const char *filename) {
   return;
 }
 
-void Matrica::print(const char *filename) {
+void Matrica::print(const char *title, const char *filename) {
   FILE *f = stdout;
 
   if (filename) {
     f = fopen(filename, "w");
+  } else {
+    fprintf(f, "--------------------\n");
+    fprintf(f, "%s\n", title);
+    fprintf(f, "--------------------\n");
   }
 
   for (int i = 0; i < _rows; ++i) {
@@ -170,6 +342,9 @@ void Matrica::print(const char *filename) {
 
   if (filename) {
     fclose(f);
+  } else {
+    fprintf(f, "--------------------\n");
   }
+  return;
 }
 

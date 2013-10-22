@@ -5,6 +5,11 @@
 #define BUFFER_SIZE 1024
 #define EPS         1e-9
 
+/* static functions */
+static void alloc_2d_array(double ** &data, int r, int c);
+
+static void realloc_2d_array(double ** &data, int r, int c);
+
 /* Matrix class */
 class Matrica {
   private:
@@ -31,14 +36,16 @@ class Matrica {
 
     /* addition operator */
     Matrica operator+ (const Matrica &rhs);
-    void operator += (const Matrica &rhs);
+    void operator+= (const Matrica &rhs);
 
     /* substraction operator */
     Matrica operator- (const Matrica &rhs);
-    void operator -= (const Matrica &rhs);
+    void operator-= (const Matrica &rhs);
 
     /* multiplication  operator */
-    Matrica operator* (const int a);
+    Matrica operator* (const double a);
+   void operator*= (const double a);
+
     Matrica operator* (const Matrica &rhs);
 
     /* transpose operator */
@@ -47,19 +54,23 @@ class Matrica {
     /* getter setter via [] operator */
     double* operator[] (const int row) const;
 
+    /* forward supstitution */
+    Matrica forward_supstitution(const Matrica &b);
+
+    /* backward supstitution */
+    Matrica backward_supstitution(const Matrica &y);
+
+    /* LU decomposition */
+    void LU_decomposition(void);
+
+    /* LUP decomposition */
+    void LUP_decomposition(Matrica &b);
+
     /* size getters */
     int getRows(void) const;
     int getCols(void) const;
 
     /* miscellaneous methods */
     void loadFromFile(const char *filename);
-    void print(const char *filename = NULL);
-
-    /* forward supstitution */
-
-    /* backward supstitution */
-
-    /* LU decomposition */
-
-    /* LUP decomposition */
+    void print(const char *title, const char *filename = NULL);
 };
