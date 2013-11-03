@@ -1,6 +1,7 @@
 #include "Matrica.hpp"
 
 #include <cstdio>
+#include <cstring>
 #include <memory>
 
 using namespace std;

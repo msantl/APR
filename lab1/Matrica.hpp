@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <cstring>
 
 #define BUFFER_SIZE 1024
 #define EPS         1e-9
