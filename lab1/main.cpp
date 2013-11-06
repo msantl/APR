@@ -32,8 +32,8 @@ int main(int argc, char **argv) {
       A.print("LU dekompozicija");
     }
 
-    Matrica y = A.forward_supstitution(b);
-    Matrica x = A.backward_supstitution(y);
+    Matrica y = A.forward_substitution(b);
+    Matrica x = A.backward_substitution(y);
 
     b.print("Vektor b");
     y.print("Vektor y");

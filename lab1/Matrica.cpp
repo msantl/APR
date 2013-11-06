@@ -194,7 +194,7 @@ double* Matrica::operator[] (const int row) const {
   return _data[row];
 }
 
-Matrica Matrica::forward_supstitution(const Matrica &b) {
+Matrica Matrica::forward_substitution(const Matrica &b) {
   if (_rows != b.getRows()) throw "Supstitucija unaprijed, pogresne dimenzije";
   if (b.getCols() != 1) throw "Supstitucija unaprijed, b nije vektor";
 
@@ -211,7 +211,7 @@ Matrica Matrica::forward_supstitution(const Matrica &b) {
   return y;
 }
 
-Matrica Matrica::backward_supstitution(const Matrica &y) {
+Matrica Matrica::backward_substitution(const Matrica &y) {
   if (_rows != _cols)       throw "Supstitucija unatrag, pogresne dimenzije";
   if (_rows != y.getRows()) throw "Supstitucija unatrag, pogresne dimenzije";
   if (y.getCols() != 1)     throw "Supstitucija unatrag, y nije vektor";

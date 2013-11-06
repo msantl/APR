@@ -55,11 +55,11 @@ class Matrica {
     /* getter setter via [] operator */
     double* operator[] (const int row) const;
 
-    /* forward supstitution */
-    Matrica forward_supstitution(const Matrica &b);
+    /* forward substitution */
+    Matrica forward_substitution(const Matrica &b);
 
-    /* backward supstitution */
-    Matrica backward_supstitution(const Matrica &y);
+    /* backward substitution */
+    Matrica backward_substitution(const Matrica &y);
 
     /* LU decomposition */
     void LU_decomposition(void);
