@@ -45,7 +45,7 @@ class Matrica {
 
     /* multiplication  operator */
     Matrica operator* (const double a);
-   void operator*= (const double a);
+    void operator*= (const double a);
 
     Matrica operator* (const Matrica &rhs);
 
