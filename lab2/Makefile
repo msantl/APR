@@ -1,6 +1,6 @@
-PROJECT = naziv_projekta
-SOURCE = main.cpp pomocni.cpp
-HEADERS = pomocni.hpp
+PROJECT = vjezba2
+SOURCE = HookeJeeves.cpp Box.cpp Vector.cpp Function.cpp main.cpp
+HEADERS = HookeJeeves.hpp Box.hpp Vector.hpp Function.hpp
 
 CC = g++
 CFLAGS = -Wall -g
