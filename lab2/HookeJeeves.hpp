@@ -1,8 +1,6 @@
 #pragma once
 
+#include "Vektor.hpp"
 #include "Function.hpp"
 
-#include <vector>
-
-std::vector< double > HookeJeeves(std::vector< double >, double Dx, double EPS, function &F);
-
+Vektor<double> HookeJeeves(Vektor<double> x, double dx, double eps, Function &f);

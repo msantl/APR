@@ -1,13 +1,35 @@
 #pragma once
 
-#include <vector>
+#include "Vektor.hpp"
 
-class function {
+class Function {
     protected:
-        std::vector< double > _p;
-
+        Vektor<double> _p;
     public:
-        virtual double operator() (const std::vector< double > &x) const = 0;
+        Function();
 
-        void setOffsetVector(const std::vector< double > &p);
+        void setOffsetVector(Vektor<double> &p);
+
+        virtual double operator() (Vektor<double> &x) = 0;
 };
+
+class Function_F1 : public Function {
+    public:
+        double operator() (Vektor<double> &x);
+};
+
+class Function_F2 : public Function {
+    public:
+        double operator() (Vektor<double> &x);
+};
+
+class Function_F3 : public Function {
+    public:
+        double operator() (Vektor<double> &x);
+};
+
+class Function_F4 : public Function {
+    public:
+        double operator() (Vektor<double> &x);
+};
+

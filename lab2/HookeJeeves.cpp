@@ -1,38 +1,33 @@
 #include "HookeJeeves.hpp"
 
-#include "Vector.hpp"
-#include "Function.hpp"
+Vektor<double> HookeJeeves(Vektor<double> x, double dx, double eps, Function &f) {
+    Vektor<double> Xb, Xp, Xn;
+    Xp = Xb = x;
 
-using namespace std;
-
-vector< double > HookeJeeves(vector< double > x, double Dx, double EPS, function &F) {
-    vector< double > xb, xp, xn;
-    xb = xp = x;
+    int n = x.size();
 
     do {
         /* explore */
-        xn = xp;
-        for (int i = 0; i < (int)x.size(); ++i) {
-            xn[i] += Dx;
-            if (F(xp) < F(xn)) {
-                xn[i] -= 2*Dx;
-                if (F(xp) < F(xn)) {
-                    xn[i] += Dx;
+        Xn = Xp;
+        for (int i = 0; i < n; ++i) {
+            Xn[i] += dx;
+            if (f(Xn) > f(Xp)) {
+                Xn[i] -= 2 * dx;
+                if (f(Xn) > f(Xp)) {
+                    Xn[i] += dx;
                 }
             }
         }
-
-        /* find new point */
-        if (F(xn) < F(xb)) {
-            xp = sub(mul(2, xn), xb);
-            xb = xn;
+        /* determine new point */
+        if (f(Xn) < f(Xb)) {
+            Xp = Xn * 2 - Xb;
+            Xb = Xn;
         } else {
-            xp = xb;
-            Dx /= 2.;
+            Xp = Xb;
+            dx /= 2.;
         }
 
-    } while (Dx > EPS);
+    } while(dx > eps);
 
-    return xb;
+    return Xb;
 }
-

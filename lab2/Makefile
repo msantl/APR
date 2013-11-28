@@ -1,11 +1,11 @@
 PROJECT = vjezba2
-SOURCE = HookeJeeves.cpp Box.cpp Vector.cpp Function.cpp main.cpp
-HEADERS = HookeJeeves.hpp Box.hpp Vector.hpp Function.hpp
+SOURCES = HookeJeeves.cpp BoxMethod.cpp Function.cpp main.cpp
+HEADERS = HookeJeeves.hpp BoxMethod.hpp Function.hpp Vektor.hpp
 
 CC = g++
 CFLAGS = -Wall -g
 LDFLAGS =
-OBJECTS = ${SOURCE:.cpp=.o}
+OBJECTS = ${SOURCES:.cpp=.o}
 
 $(PROJECT): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(PROJECT)

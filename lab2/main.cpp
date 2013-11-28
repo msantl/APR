@@ -1,114 +1,43 @@
-#include "HookeJeeves.hpp"
-#include "Box.hpp"
-#include "Function.hpp"
-
 #include <cstdio>
-#include <vector>
-#include <cmath>
-#include <ctime>
 #include <cstdlib>
+#include <cstring>
 #include <unistd.h>
+
+#include "Vektor.hpp"
+#include "Function.hpp"
+#include "HookeJeeves.hpp"
+#include "BoxMethod.hpp"
 
 using namespace std;
 
-#define sqr(x) ((x)*(x))
-#define abs(x) (((x) < 0) ? (-(x)) : (x))
+/* global variables that determine the algorithms behaviour */
+static double Dx = 0.5;
+static double A = 1.3;
+static double EPS = 1e-9;
+static char* X0_filename = NULL;
+static Vektor<double> X0, P0;
 
-/* functions for which we want to find their minimum */
-
-class F0 : public function {
-    double operator() (const vector< double > &x) const {
-        return sqr(x[0]) + sqr(x[1]);
-    }
-} f0;
-
-class F1 : public function {
-    double operator() (const vector< double > &x) const {
-        return 10 * sqr(sqr(x[0]) - x[1]) + sqr(1-x[0]);
-    }
-} f1;
-
-class F2 : public function {
-    double operator() (const vector< double > &x) const {
-        return sqr(x[0] - 4) + 4 * sqr(x[1] - 2);
-    }
-} f2;
-
-class F3 : public function {
-    double operator() (const vector< double > &x) const {
-        double ret = 0;
-        for (int i = 0; i < (int)x.size(); ++i) {
-            ret += sqr(x[i] - _p[i]);
-        }
-        return ret;
-    }
-} f3;
-
-class F4 : public function {
-    double operator() (const vector< double > &x) const {
-        return abs((x[0] - x[1]) * (x[0] + x[1])) + sqrt(sqr(x[0]) + sqr(x[1]));
-    }
-} f4;
-
-/* helper function that reads the starting point */
-void parseInputFile(char *filename, vector< double >&x, vector< double > &p ) {
-    FILE *f = fopen(filename, "r");
-    int n;  fscanf(f, "%d", &n);
-    double d;
-
-    for (int i = 0; i < n; ++i) {
-        fscanf(f, "%lf", &d);
-        x.push_back(d);
-    }
-
-    for (int i = 0; i < n; ++i) {
-        fscanf(f, "%lf", &d);
-        p.push_back(d);
-    }
-
-    return;
+void print_usage(void) {
+    printf("Analiza i projektiranje racunalom - druga domaca zadaca\n");
+    printf("\n");
+    printf("Koristenje programa:\n");
+    printf("\t-h\tispisuje upute za koristenje programa\n");
+    printf("\t-a\tdefinira faktor refleksije za postupak po Boxu\n");
+    printf("\t-d\tdefinira pocetno dopusteno odstupanje prilikom izracuna nove"
+            "tocke kod Hooke-Jeeves postupka\n");
+    printf("\t-e\tdefinira zeljenu tocnost rjesenja\n");
+    printf("\t-x\tdefinira putanju u kojoj se nalazi pocetno rjesenje\n");
+    printf("\n");
+    printf("./vjezba2 [-h] [-a A] [-d Dx] [-e EPS] -p X0\n");
+    printf("\n");
+    exit(0);
 }
 
-/* helper function that prints out the results using Hooke Jeeves method*/
-void findMinimumHookeJeeves(const vector< double > &x, const vector< double > &p, const double &Dx, const double &EPS, function &f) {
-    f.setOffsetVector(p);
-
-    vector< double > res = HookeJeeves(x, Dx, EPS, f);
-
-    for (int i = 0; i < (int)res.size(); ++i) {
-        printf("%.2lf ", res[i]);
-    }   printf("\n");
-}
-
-/* helper function that prints out the results using Box method*/
-void findMinimumBox(const vector< double > &x, const vector< double > &p, const double &A, const double &EPS, function &f) {
-    f.setOffsetVector(p);
-
-    vector< double > res = Box(x, A, EPS, f);
-
-    for (int i = 0; i < (int)res.size(); ++i) {
-        printf("%.2lf ", res[i]);
-    }   printf("\n");
-}
-
-int main(int argc, char **argv) {
-    srand((time(NULL)));
-
-    vector< double > x;
-    vector< double > p;
-    double Dx = 0.5, EPS = 1e-9, A = 1.3;
-
-    if (argc < 2) {
-        fprintf(stderr, "Navedite ime datoteke koja sadrzi pocetne podatke\n");
-        return 1;
-    }
-    parseInputFile(argv[1], x, p);
-
-    /* parse command line arguments for Dx and EPS*/
+void parse_commad_line_args(int argc, char **argv) {
     int c;
-    while ((c = getopt (argc, argv, "a:d:e:")) != -1)
-        switch (c)
-        {
+
+    while ((c = getopt(argc, argv, "a:d:e:hx:")) != -1) {
+        switch(c) {
             case 'a':
                 sscanf(optarg, "%lf", &A);
                 break;
@@ -118,28 +47,96 @@ int main(int argc, char **argv) {
             case 'e':
                 sscanf(optarg, "%lf", &EPS);
                 break;
+            case 'x':
+                X0_filename = (char *)malloc(strlen(optarg));
+                strcpy(X0_filename, optarg);
+                break;
             case '?':
-                if (optopt == 'd' || optopt == 'e') {
-                    fprintf (stderr, "Options -a, -d and -e require an argument.\n");
-                } else {
-                    fprintf (stderr, "Unknown option '%c'.\n", optopt);
+                if (optopt == 'a' || optopt == 'd' ||
+                    optopt == 'e' || optopt == 'x') {
+                    fprintf(stderr, "Opcija -%c zahtjeva parametar\n", optopt);
                 }
-                return 1;
-            default:
-                continue;
+                /* fall through */
+            case 'h':
+                print_usage();
+                break;
+        }
+    }
+
+    if (X0_filename == NULL) {
+        fprintf(stderr, "Izostavljen obavezan parametar -x\n");
+        print_usage();
+    } else {
+        FILE *f = fopen(X0_filename, "r");
+        int n; fscanf(f, "%d", &n);
+
+        X0 = Vektor<double>(n);
+        P0 = Vektor<double>(n);
+
+        for (int i = 0; i < n; ++i) {
+            fscanf(f, "%lf", &X0[i]);
         }
 
-    /* print results for Hooke Jeeves method*/
-    printf("Starting HookeJeeves with Dx=%lf and EPS=%lf\n", Dx, EPS);
-    findMinimumHookeJeeves(x, p, Dx, EPS, f1);
-    findMinimumHookeJeeves(x, p, Dx, EPS, f2);
-    findMinimumHookeJeeves(x, p, Dx, EPS, f3);
-    findMinimumHookeJeeves(x, p, Dx, EPS, f4);
+        for (int i = 0; i < n; ++i) {
+            fscanf(f, "%lf", &P0[i]);
+        }
 
-    /* print results for Box method */
-    printf("Starting Box with a=%lf and EPS=%lf\n", A, EPS);
-    findMinimumBox(x, p, A, EPS, f2);
-    findMinimumBox(x, p, A, EPS, f3);
+        fclose(f);
+    }
+}
+
+void printHookeJeeves(const char *label, Vektor<double> x, double dx, double eps, Function &f) {
+    printf("%s: X = (", label);
+
+    Vektor<double> sol = HookeJeeves(x, dx, eps, f);
+    for (int i = 0; i < sol.size(); ++i) {
+        printf("%lf, ", sol[i]);
+    }
+
+    printf(")\n");
+    return;
+}
+
+void printBoxMethod(const char *label, Vektor<double> x, double a, double eps, Function &f) {
+    printf("%s: X = (", label);
+
+    Vektor<double> sol = BoxMethod(x, a, eps, f);
+    for (int i = 0; i < sol.size(); ++i) {
+        printf("%lf, ", sol[i]);
+    }
+
+    printf(")\n");
+    return;
+}
+
+int main(int argc, char **argv) {
+    parse_commad_line_args(argc, argv);
+
+    /* prepare functions we want to find their minimum */
+    vector< Function > f;
+    Function_F1 f1; f1.setOffsetVector(P0);
+    Function_F2 f2; f2.setOffsetVector(P0);
+    Function_F3 f3; f3.setOffsetVector(P0);
+    Function_F4 f4; f4.setOffsetVector(P0);
+
+    /* print out the solutions using HookeJeeves method */
+    printf("Postupak Hooke-Jeeves:\n");
+    printf("Dx = %lf, EPS = %lf\n", Dx, EPS);
+    printf("------------------------\n");
+    printHookeJeeves("f1", X0, Dx, EPS, f1);
+    printHookeJeeves("f2", X0, Dx, EPS, f2);
+    printHookeJeeves("f3", X0, Dx, EPS, f3);
+    printHookeJeeves("f4", X0, Dx, EPS, f4);
+
+    /* print out the solutions for 2. and 3. using Box method */
+    printf("Postupak po Boxu:\n");
+    printf("A = %lf, EPS = %lf\n", A, EPS);
+    printf("------------------------\n");
+    printBoxMethod("f2", X0, A, EPS, f2);
+    printBoxMethod("f3", X0, A, EPS, f3);
+
+    // printBoxMethod("f1", X0, A, EPS, f1);
+    //  printBoxMethod("f4", X0, A, EPS, f4);
 
     return 0;
 }
