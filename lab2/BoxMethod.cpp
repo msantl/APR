@@ -70,7 +70,7 @@ Vektor<double> BoxMethod(Vektor<double> x, double a, double eps, Function &f) {
     assert(check_explicit(x) == true);
     assert(check_implicit(x) == true);
 
-    srand(time(NULL));
+    srand((unsigned)time(NULL));
 
     Vektor< double > Xc, Xr;
 
