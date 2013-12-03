@@ -113,7 +113,6 @@ int main(int argc, char **argv) {
     parse_commad_line_args(argc, argv);
 
     /* prepare functions we want to find their minimum */
-    vector< Function > f;
     Function_F1 f1; f1.setOffsetVector(P0);
     Function_F2 f2; f2.setOffsetVector(P0);
     Function_F3 f3; f3.setOffsetVector(P0);
