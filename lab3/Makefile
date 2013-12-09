@@ -1,6 +1,6 @@
-PROJECT = naziv_projekta
-SOURCES = main.cpp pomocni.cpp
-HEADERS = pomocni.hpp
+PROJECT = vjezba3
+SOURCES = main.cpp
+HEADERS = 
 
 CC = g++
 CFLAGS = -Wall -g
