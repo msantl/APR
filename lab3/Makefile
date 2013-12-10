@@ -1,6 +1,6 @@
 PROJECT = vjezba3
-SOURCES = main.cpp
-HEADERS = 
+SOURCES = main.cpp Jedinka.cpp Funkcija.cpp GenetskiAlgoritam.cpp
+HEADERS = Jedinka.hpp Funkcija.hpp GenetskiAlgoritam.hpp
 
 CC = g++
 CFLAGS = -Wall -g
