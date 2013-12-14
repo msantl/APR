@@ -29,9 +29,8 @@ double Funkcija_F4::operator() (vector<double> x) {
 
 double Funkcija_F6::operator() (vector<double> x) {
     double ret = 0;
-    int N = 3;
 
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < x.size(); ++i) {
         ret += x[i] * x[i];
     }
 
@@ -40,9 +39,8 @@ double Funkcija_F6::operator() (vector<double> x) {
 
 double Funkcija_F7::operator() (vector<double> x) {
     double ret = 0;
-    int N = 3;
 
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < x.size(); ++i) {
         ret += x[i] * x[i];
     }
 

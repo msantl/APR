@@ -16,41 +16,14 @@ static vector< double > JedinkaToVector(const Jedinka &j) {
     return ret;
 }
 
-static void selekcija(vector< Jedinka >&pop, int &x, int &y, int &z, Funkcija &f) {
+static void selekcija(vector< Jedinka >&pop, int &x, int &y, int &z) {
     int N = (int)pop.size();
 
-    double sum = 0;
-    for (int i = 0; i < N; ++i) {
-        sum += f(JedinkaToVector(pop[i]));
-    }
+    x = rand() % N;
 
-    double a = sum * (rand() / (1. * RAND_MAX));
-    double b = sum * (rand() / (1. * RAND_MAX));
-    double c = sum * (rand() / (1. * RAND_MAX));
+    do { y = rand() % N; } while (x == y);
 
-    x = y = z = -1;
-
-    for (int i = 0; i < N; ++i) {
-        double temp_value = f(JedinkaToVector(pop[i]));
-
-        if (!~x && temp_value > a) {
-            x = i;
-        } else {
-            a -= temp_value;
-        }
-
-        if (!~y && temp_value > b) {
-            y = i;
-        } else {
-            b -= temp_value;
-        }
-
-        if (!~z && temp_value > c) {
-            z = i;
-        } else {
-            c -= temp_value;
-        }
-    }
+    do { z = rand() % N; } while (x == z || y == z);
 
     return;
 }
@@ -72,16 +45,14 @@ static void krizanje(vector< Jedinka >&pop, int x, int y, int z) {
 static void mutacija(Jedinka &jedinka, double Pm) {
     /* jednostavna mutacija - slucajna promjena jednog bita unutar kromosoma */
     for (int i = 0; i < jedinka.getDimension(); ++i) {
-        for (int j = 0; j < jedinka.getLength(); ++j) {
-            double prob = rand() / (1. * RAND_MAX);
-            if (prob < Pm) {
-                int val = jedinka.getBinaryByIndex(i);
-                val ^= 1 << j;
+        double prob = rand() / (1. * RAND_MAX);
+        if (prob >= Pm) continue;
 
-                jedinka.setBinaryByIndex(i, val);
-            }
-        }
+        int val = jedinka.getBinaryByIndex(i);
+        val ^= 1 << (rand() % jedinka.getLength());
+        jedinka.setBinaryByIndex(i, val);
     }
+
     return;
 }
 
@@ -105,34 +76,33 @@ vector<double> GenetskiAlgoritam(int population, double Pm, int dimension, int p
     }
 
     do {
-        int i, j, k;
+        int a, b, c;
         /* odaberi slucajno 3 jedinke */
-        selekcija(populacija, i, j, k, f);
+        selekcija(populacija, a, b, c);
 
-        double val_i = f(JedinkaToVector(populacija[i]));
-        double val_j = f(JedinkaToVector(populacija[j]));
-        double val_k = f(JedinkaToVector(populacija[k]));
-        /* zamijeni najgoru sa dijetetom bolje dvije */
-        if (val_i > val_j && val_i > val_k) swap(i, k);
-        if (val_j > val_i && val_j > val_k) swap(j, k);
+        double val_a = f(JedinkaToVector(populacija[a]));
+        double val_b = f(JedinkaToVector(populacija[b]));
+        double val_c = f(JedinkaToVector(populacija[c]));
+        if (val_a >= val_b && val_a >= val_c) swap(a, c);
+        if (val_b >= val_a && val_b >= val_c) swap(b, c);
 
-        krizanje(populacija, i, j, k);
+        /* umjesto c u populaciju stavi krizaj(a, b) */
+        krizanje(populacija, a, b, c);
 
         /* mutiraj novu jedinku */
-        mutacija(populacija[k], Pm);
+        mutacija(populacija[c], Pm);
 
         /* evaluiraj novu jedinku */
-        double temp_value = f(JedinkaToVector(populacija[k]));
+        double temp_value = f(JedinkaToVector(populacija[c]));
         if (temp_value < best_value) {
             best_value = temp_value;
-            best = populacija[k];
+            best = populacija[c];
+
+            /* ispisi trenutno najbolju jedinku */
+            for (int i = 0; i < best.getDimension(); ++i) {
+                fprintf(stderr, "%.5lf ", best.getFloatByIndex(i));
+            }   fprintf(stderr, " = %.5lf\n", best_value);
         }
-
-        /* ispisi trenutno najbolju jedinku */
-        for (int i = 0; i < best.getDimension(); ++i) {
-            fprintf(stderr, "%.2lf ", best.getFloatByIndex(i));
-        }   fprintf(stderr, " = %.2lf\n", best_value);
-
     } while (ITER--);
 
     /* vrati najbolju jedinku */

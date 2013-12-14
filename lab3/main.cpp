@@ -16,7 +16,7 @@ const int GG = 100;
 
 /* static variables that define initial conditions of GA */
 static int N = 42;
-static double Pm = 0.005;
+static double Pm = 0.3;
 static int ITER = 10000;
 static char* offset_filename = NULL;
 static vector< double > offset;
@@ -31,7 +31,7 @@ void print_usage(void) {
     printf("\t-i\tbroj iteracija postupka (10000 default)\n");
     printf("\t-x\tdatoteka koja sadrzi vektor pomaka funkcije\n");
     printf("\n");
-    printf("./vjezba3 [-h] [-n N] [-p Pm] [-e I] -x <filename>\n");
+    printf("./vjezba3 [-h] [-n N] [-p Pm] [-i I] -x <filename>\n");
     printf("\n");
     exit(0);
 }
@@ -91,8 +91,8 @@ void printSolutionForFunction(Funkcija &f, const char *label = NULL) {
     printf("-------------------------\n");
     vector< double > sol = GenetskiAlgoritam(N, Pm, DIMENSION, PRECISION, DG, GG, f, ITER);
     for (int i = 0; i < (int)sol.size(); ++i) {
-        printf("%.2lf ", sol[i]);
-    }   printf("= Solution (%.4lf)\n", f(sol));
+        printf("%.5lf ", sol[i]);
+    }   printf("= Solution (%.5lf)\n", f(sol));
 
     printf("-------------------------\n");
     return;
