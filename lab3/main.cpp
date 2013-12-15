@@ -9,14 +9,14 @@
 using namespace std;
 
 /* constant variables that define initial conditions of GA */
-const int DIMENSION = 3;
+const int DIMENSION = 5;
 const int PRECISION = 3;
 const int DG = -100;
 const int GG = 100;
 
 /* static variables that define initial conditions of GA */
 static int N = 42;
-static double Pm = 0.3;
+static double Pm = 0.5;
 static int ITER = 10000;
 static char* offset_filename = NULL;
 static vector< double > offset;
@@ -26,9 +26,9 @@ void print_usage(void) {
     printf("\n");
     printf("Koristenje programa:\n");
     printf("\t-h\tispisuje upute za koristenje programa\n");
-    printf("\t-n\tbroj clanova populacije (42 default)\n");
-    printf("\t-p\tvjerojatnost mutacije bita (0.005 default)\n");
-    printf("\t-i\tbroj iteracija postupka (10000 default)\n");
+    printf("\t-n\tbroj clanova populacije (%d default)\n", N);
+    printf("\t-p\tvjerojatnost mutacije bita (%lf default)\n", Pm);
+    printf("\t-i\tbroj iteracija postupka (%d default)\n", ITER);
     printf("\t-x\tdatoteka koja sadrzi vektor pomaka funkcije\n");
     printf("\n");
     printf("./vjezba3 [-h] [-n N] [-p Pm] [-i I] -x <filename>\n");
@@ -56,7 +56,7 @@ void parse_commad_line_args(int argc, char **argv) {
                 break;
             case '?':
                 if (optopt == 'n' || optopt == 'p' ||
-                    optopt == 'p' || optopt == 'x') {
+                    optopt == 'i' || optopt == 'x') {
                     fprintf(stderr, "Opcija -%c zahtjeva parametar\n", optopt);
                 }
                 /* fall through */

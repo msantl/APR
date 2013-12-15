@@ -4,27 +4,23 @@
 
 class Jedinka {
     private:
-        std::vector< unsigned int > _b;
-        int _length;
+        std::vector<double> _b;
         int _dimension;
         int _lower_bound, _upper_bound;
         int _precision;
-
-        unsigned int _convert_to_binary(double num) const;
-        double _convert_to_float(int num) const;
 
     public:
         Jedinka();
         Jedinka(int dimension, int precision, int lower_bound, int upper_bound);
 
-        unsigned int getBinaryByIndex(int index) const;
-        double getFloatByIndex(int index) const;
+        ~Jedinka();
 
-        void setBinaryByIndex(int index, unsigned int value);
+        double getFloatByIndex(int index) const;
         void setFloatByIndex(int index, double value);
 
         int getDimension(void) const;
-        int getLength(void) const;
+        int getDG(void) const;
+        int getGG(void) const;
 };
 
 

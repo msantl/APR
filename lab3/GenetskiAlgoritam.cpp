@@ -20,37 +20,33 @@ static void selekcija(vector< Jedinka >&pop, int &x, int &y, int &z) {
     int N = (int)pop.size();
 
     x = rand() % N;
-
     do { y = rand() % N; } while (x == y);
-
     do { z = rand() % N; } while (x == z || y == z);
 
     return;
 }
 
 static void krizanje(vector< Jedinka >&pop, int x, int y, int z) {
-    int R = rand();
+    double a = rand() / (1. * RAND_MAX);
 
-    /* DIJETE = AB + R(A^B) */
+    /* D = a X1 + (1-a) X2 */
     for (int i = 0; i < pop[z].getDimension(); ++i) {
-        int lhs = (pop[x].getBinaryByIndex(i) & pop[y].getBinaryByIndex(i));
-        int rhs = (pop[x].getBinaryByIndex(i) ^ pop[y].getBinaryByIndex(i)) & R;
-
-        pop[z].setBinaryByIndex(i, lhs | rhs);
+        pop[z].setFloatByIndex(i,
+                pop[x].getFloatByIndex(i) * a +
+                pop[y].getFloatByIndex(i) * (1 - a));
     }
 
     return;
 }
 
 static void mutacija(Jedinka &jedinka, double Pm) {
-    /* jednostavna mutacija - slucajna promjena jednog bita unutar kromosoma */
-    for (int i = 0; i < jedinka.getDimension(); ++i) {
-        double prob = rand() / (1. * RAND_MAX);
-        if (prob >= Pm) continue;
-
-        int val = jedinka.getBinaryByIndex(i);
-        val ^= 1 << (rand() % jedinka.getLength());
-        jedinka.setBinaryByIndex(i, val);
+    /* jednolika mutacija - slucajni broj u intervalu */
+    double prob = rand() / (1. * RAND_MAX);
+    if (prob < Pm) {
+        for (int i = 0; i < jedinka.getDimension(); ++i) {
+            double val = jedinka.getDG() + (rand() / (1. * RAND_MAX)) * (jedinka.getGG() - jedinka.getDG());
+            jedinka.setFloatByIndex(i, val);
+        }
     }
 
     return;
