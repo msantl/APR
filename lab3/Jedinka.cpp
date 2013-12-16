@@ -50,7 +50,7 @@ double Jedinka::getFloatByIndex(int index)  const {
 
 void Jedinka::setFloatByIndex(int index, double value) {
     assert(index >= 0 && index < _dimension);
-    _b[index] = round_double(value, _precision);
+    _b[index] = value;
 }
 
 int Jedinka::getDimension(void) const {

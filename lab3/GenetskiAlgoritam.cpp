@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <random>
 
 using namespace std;
 
@@ -27,9 +28,9 @@ static void selekcija(vector< Jedinka >&pop, int &x, int &y, int &z) {
 }
 
 static void krizanje(vector< Jedinka >&pop, int x, int y, int z) {
+    /* D = a X1 + (1-a) X2 */
     double a = rand() / (1. * RAND_MAX);
 
-    /* D = a X1 + (1-a) X2 */
     for (int i = 0; i < pop[z].getDimension(); ++i) {
         pop[z].setFloatByIndex(i,
                 pop[x].getFloatByIndex(i) * a +
@@ -45,6 +46,11 @@ static void mutacija(Jedinka &jedinka, double Pm) {
     if (prob < Pm) {
         for (int i = 0; i < jedinka.getDimension(); ++i) {
             double val = jedinka.getDG() + (rand() / (1. * RAND_MAX)) * (jedinka.getGG() - jedinka.getDG());
+
+            val += jedinka.getFloatByIndex(i);
+            val = min((double)jedinka.getGG(), val);
+            val = max((double)jedinka.getDG(), val);
+
             jedinka.setFloatByIndex(i, val);
         }
     }
