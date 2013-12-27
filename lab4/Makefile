@@ -1,6 +1,6 @@
 PROJECT = vjezba4
-SOURCE = main.cpp Matrica.cpp
-HEADERS = Matrica.hpp
+SOURCE = main.cpp Matrica.cpp Trapezni.cpp RungeKutta4.cpp
+HEADERS = Matrica.hpp Trapezni.hpp RungeKutta4.hpp
 
 CC = g++
 CFLAGS = -Wall -g 

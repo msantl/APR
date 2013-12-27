@@ -77,4 +77,7 @@ class Matrica {
     /* miscellaneous methods */
     void loadFromFile(const char *filename);
     void print(const char *title, const char *filename = NULL);
+
+    /* static methods */
+    static Matrica getIdentityMatrix(int r, int c);
 };

@@ -384,3 +384,16 @@ void Matrica::print(const char *title, const char *filename) {
   return;
 }
 
+
+Matrica Matrica::getIdentityMatrix(int r, int c) {
+    if (r != c) throw "Matrica identiteta, pogresne dimenzije";
+
+    Matrica result(r, c);
+    for (int i = 0; i < r; ++i) {
+        for (int j = 0; j < c; ++j) {
+            result[i][j] = (i == j);
+        }
+    }
+
+    return result;
+}
