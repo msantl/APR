@@ -5,7 +5,7 @@
 class Trapezni {
     public:
 
-    static Matrica computeNextValue(Matrica xk, Matrica A, double T);
+    static Matrica computeNextValue(Matrica xk, Matrica A, Matrica B, double T, double tk);
 
 };
 
