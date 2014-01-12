@@ -1,0 +1,4 @@
+To plot. enter the following commands in gnuplot:
+
+gnuplot> plot "trapezni.plot" using 1:2 title 'X1', "trapezni.plot" using 1:3 title 'X2'
+gnuplot> plot "runge_kutta.plot" using 1:2 title 'X1', "runge_kutta.plot" using 1:3 title 'X2'
