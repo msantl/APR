@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
         Matrica xk(x0);
 
         for (double ti = T; ti <= t; ti += T) {
-            xk = Trapezni::computeNextValue(xk, A, B, T, ti);
+            xk = Trapezni::computeNextValue(xk, A, B, T);
 
             if (int(ti / T) % p == 0) {
                 sprintf(buffer, "xk, iteracija t = %lf", ti);
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
         Matrica xk(x0);
 
         for (double ti = T; ti <= t; ti += T) {
-            xk = RungeKutta4::computeNextValue(xk, A, T);
+            xk = RungeKutta4::computeNextValue(xk, A, B, T);
 
             if (int(ti / T) % p == 0) {
                 sprintf(buffer, "xk, iteracija t = %lf", ti);
